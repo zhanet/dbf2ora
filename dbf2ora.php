@@ -39,25 +39,25 @@ function clearTable($tname)
  */
 function isGB($str) 
 {
-	$w = 0; //中文开始位置
-	$slen = strlen($str);
-	//取中文字开始位置
-	for ($i=0; $i < $slen; $i++) {
-		if (ord(substr($str,$i,1)) > 127) {
-			$w = $i; break;
-		}
-	}
-	//从中文字开始，跳过英文字符
-	for ($i=$w; $i < $slen; $i=$i+2) {
-		if (ord(substr($str,$i,1)) > 127) {
-			//若为最后字符，则为半个汉字
-			if ($i == $slen-1) return 1;
-		} else {
-			//普通ASCII，跳过
-			$i = $i - 1;
-		}
-	}
-	return 0;
+    $w = 0; //中文开始位置
+    $slen = strlen($str);
+    //取中文字开始位置
+    for ($i=0; $i < $slen; $i++) {
+        if (ord(substr($str,$i,1)) > 127) {
+            $w = $i; break;
+        }
+    }
+    //从中文字开始，跳过英文字符
+    for ($i=$w; $i < $slen; $i=$i+2) {
+        if (ord(substr($str,$i,1)) > 127) {
+            //若为最后字符，则为半个汉字
+            if ($i == $slen-1) return 1;
+        } else {
+            //普通ASCII，跳过
+            $i = $i - 1;
+        }
+    }
+    return 0;
 }
 
 /**
@@ -137,15 +137,15 @@ function getValue($dbf, &$fields, &$record, $f, $m)
             $value = "to_date('".substr($dbf,4,6).$value."','YYYYMMDD')";
         } else $value = "NULL";
     }
-	else if ($m == "D4") {
-		//为早期DBF日期字段加上19 
-		$value = trim($record[$f]);
+    else if ($m == "D4") {
+        //为早期DBF日期字段加上19 
+        $value = trim($record[$f]);
         if (strlen($value)==8) {
-			$value = "to_date('".$value."','YYYYMMDD')";
-		} else if (strlen($value)==6 && preg_match('/^(8|9)\d{5}$/', $value)) {
-			$value = "to_date('19".$value."','YYYYMMDD')";
-		} else $value = "NULL";
-	}
+            $value = "to_date('".$value."','YYYYMMDD')";
+        } else if (strlen($value)==6 && preg_match('/^(8|9)\d{5}$/', $value)) {
+            $value = "to_date('19".$value."','YYYYMMDD')";
+        } else $value = "NULL";
+    }
     return $value;
 }
 
@@ -161,36 +161,36 @@ function getValue($dbf, &$fields, &$record, $f, $m)
  */
 function dbf2ora($csv, $dbf, $tname, $dftype, $start=0, $debug=0)
 {
-	//读字段对应关系文件
+    //读字段对应关系文件
     $fp = fopen($csv, "r") or die("打开字段定义文件出错：".$csv." !");
-	if (!feof($fp)) {$tmp = fgets($fp);} //取第一行
-	$fd = array();
-	while (!feof($fp)) {
-		$tmp = explode(",", fgets($fp));
-		if (count($tmp) >= 3) {
-			//读字段定义到数组中
-			$fd[] = array_slice($tmp, 0, 3);
-		} else if (count($tmp) < 3) {
-			//不足出错
-			//print_r($tmp);
-			//die("字段对应关系错误：".$csv." !" );
-		}
-		//list($fn,$dfn,$m) = split(",", fgets($fp));
-	}
-	fclose($fp);
+    if (!feof($fp)) {$tmp = fgets($fp);} //取第一行
+    $fd = array();
+    while (!feof($fp)) {
+        $tmp = explode(",", fgets($fp));
+        if (count($tmp) >= 3) {
+            //读字段定义到数组中
+            $fd[] = array_slice($tmp, 0, 3);
+        } else if (count($tmp) < 3) {
+            //不足出错
+            //print_r($tmp);
+            //die("字段对应关系错误：".$csv." !" );
+        }
+        //list($fn,$dfn,$m) = split(",", fgets($fp));
+    }
+    fclose($fp);
 
-	//生成SQL字符串
-	$sql0 = "INSERT INTO $tname(";
-	foreach ($fd as $k) {
-		//跳过空字段名
-		if ( trim($k[0]) <> "" && trim($k[1]) <> "" && trim($k[2]) <> "" ) {
-			$sql0 = $sql0.$k[0].",";
-		}
-	}
-	$sql0 = trim($sql0,",").") VALUES (";
+    //生成SQL字符串
+    $sql0 = "INSERT INTO $tname(";
+    foreach ($fd as $k) {
+        //跳过空字段名
+        if ( trim($k[0]) <> "" && trim($k[1]) <> "" && trim($k[2]) <> "" ) {
+            $sql0 = $sql0.$k[0].",";
+        }
+    }
+    $sql0 = trim($sql0,",").") VALUES (";
     //echo $sql0; exit;
 
-	//打开DBF文件和SQL记录文件
+    //打开DBF文件和SQL记录文件
     $dbp = @dbase_open($dbf, 0) or die("Error opening $dbf");
     $records = @dbase_numrecords($dbp);
     if ($records == 0) {
@@ -207,8 +207,8 @@ function dbf2ora($csv, $dbf, $tname, $dftype, $start=0, $debug=0)
         $dbh = new PDO('odbc:ORA11','gjcy','gjcygc', array(PDO_ATTR_PERSISTENT=>true));
         $dbh->beginTransaction();
 
-		$x = 0; //记录数
-		$cc = 0; //出错记录数
+        $x = 0; //记录数
+        $cc = 0; //出错记录数
         for($x = 1; $x <= $records; $x++) {
             //按字段名或按字段序号读字段值
             if ($dftype == "#") {
@@ -273,37 +273,37 @@ function dbf2ora($csv, $dbf, $tname, $dftype, $start=0, $debug=0)
 //检查命令行参数
 //print_r($argv);
 if (count($argv) < 3) {
-	echo "命令格式：PHP DBF2ORA.PHP <字段关系文件名> <年份> [清空] [调试] \r\n";
-	exit;
+    echo "命令格式：PHP DBF2ORA.PHP <字段关系文件名> <年份> [清空] [调试] \r\n";
+    exit;
 }
 
 $ffile = $argv[1];
 $fp = fopen($ffile, "r") or die("打开字段定义文件出错：".$ffile." !");
 if (!feof($fp)) {
-	//分析首行
-	$ff = explode(",", fgets($fp));
-	if (count($ff) >= 3) {
-		$dname = trim($ff[1]); //DBF前缀
-		$tname = trim($ff[0]); //ORACLE表名
-		$ftype = trim($ff[2]); //DBF字段类型
-	} else die("\r\n字段对应关系文件错误：".$ffile." !\r\n");
+    //分析首行
+    $ff = explode(",", fgets($fp));
+    if (count($ff) >= 3) {
+        $dname = trim($ff[1]); //DBF前缀
+        $tname = trim($ff[0]); //ORACLE表名
+        $ftype = trim($ff[2]); //DBF字段类型
+    } else die("\r\n字段对应关系文件错误：".$ffile." !\r\n");
 } else die("\r\n字段对应关系不能为空：".$ffile." !\r\n");
 //echo $dname.$ftype.$tname; exit;
 
 //历史数据开始年份
 $dbfYear = $argv[2];
 if (preg_match("/^(19\d{2}|200\d{1})$/", $dbfYear)) {
-	if ($dbfYear < "1980" || $dbfYear > "2009") {
-		die("\r\n历史数据开始年份无效：".$dbfYear."\r\n");
-	}
+    if ($dbfYear < "1980" || $dbfYear > "2009") {
+        die("\r\n历史数据开始年份无效：".$dbfYear."\r\n");
+    }
 }
 else die("\r\n历史数据开始年份错误：".$dbfYear."\r\n");
 
 //是否清空表
 if (isset($argv[3]) && $argv[3] == 1) {
-	echo "\r\n清空 ORACLE 数据表：$tname \r\n";
-	clearTable($tname); //清空目的表
-	echo "\r\n";
+    echo "\r\n清空 ORACLE 数据表：$tname \r\n";
+    clearTable($tname); //清空目的表
+    echo "\r\n";
 }
 
 //是否调试模式
@@ -314,10 +314,10 @@ $ccr = 0;
 $totalTime = 0;
 for ($y = $dbfYear; $y <= 2009; $y++)
 {
-	for ($m = 1; $m <= 12; $m++)
-	{
-		$dbf = $dname.$y.str_pad($m,2,"0",STR_PAD_LEFT).".dbf";
-		//echo $dname; exit;
+    for ($m = 1; $m <= 12; $m++)
+    {
+        $dbf = $dname.$y.str_pad($m,2,"0",STR_PAD_LEFT).".dbf";
+        //echo $dname; exit;
         if (file_exists($dbf)) {
             $x = 0;
             $begin = microtime(TRUE);
@@ -329,7 +329,7 @@ for ($y = $dbfYear; $y <= 2009; $y++)
             $totalTime = $totalTime + $time;
             echo "迁移 ".$dbf." ".$x." 执行了 ".$time." 秒。\r\n";
         }
-	}
+    }
 }
 
 echo "\r\n迁移记录：".($xr)." 笔。\r\n";
